@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: gitlab
+  name: gitlab-runner-config
+  annotations:
+    "volume.beta.kubernetes.io/storage-class": "nfs"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10M
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: gitlab
+spec:
+  selector:
+    matchLabels:
+      app: gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: gitlab-runner
+    spec:
+      containers:
+      - args:
+        - run
+        image: gitlab/gitlab-runner:alpine-v12.2.0
+        imagePullPolicy: Always
+        name: gitlab-runner
+        volumeMounts:
+        - mountPath: /etc/gitlab-runner
+          name: gitlab-runner-config
+      restartPolicy: Always
+      volumes:
+      - name: gitlab-runner-config
+        persistentVolumeClaim:
+          claimName: gitlab-runner-config
