@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  gitLab:
+    image: gitlab/gitlab-ce:latest
+    ports:
+      - "8001:80"
+    volumes:
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+#      - /var/opt/gitlab/.ssh
+
+  plantuml-server:
+    image: plantuml/plantuml-server
+    restart: always
+    ports:
+      - "13080:8080"
